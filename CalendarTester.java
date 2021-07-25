@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,8 +42,9 @@ public class CalendarTester {
      * @param args unused
      */
     public static void main(String[] args) {
-        currentDate = LocalDate.now();
 
+        CalendarModel calModel = new CalendarModel();
+        currentDate = calModel.getToday();
         frame = new JFrame();
         final int FRAME_WIDTH = 700;
         final int FRAME_HEIGHT = 950;
@@ -108,15 +110,25 @@ public class CalendarTester {
         bottomPanel = new JPanel();
         bottomPanel.add(new DayView(currentDate));
 
+
         JButton day = new JButton("Day");
-        day.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                bottomPanel.removeAll();
-                bottomPanel.add(new DayView(currentDate));
-                bottomPanel.revalidate();
-            }
-        });
+        day.addActionListener(updateViewMetric("day", calModel));
+
+
+//        day.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                bottomPanel.removeAll();
+//                bottomPanel.add(new DayView(currentDate));
+//                bottomPanel.revalidate();
+//            }
+//        });
+
+
+//        week.addActionListener(updateViewMetric("week", model));
+//        agenda.addActionListener(updateViewMetric("agenda", model));
+//        month.addActionListener(updateViewMetric("month", model));
+
 
         JButton week = new JButton("Week");
         week.addActionListener(new ActionListener() {
@@ -183,6 +195,48 @@ public class CalendarTester {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
+
+    /**
+     * Updates the view metric in the model
+     *
+     * @param metric - the view metric
+     * @param model  - the calendar model
+     */
+    public static ActionListener updateViewMetric(String metric, CalendarModel model) {
+        if (metric.equals("day")) {
+            return event -> {
+                model.setMetric("day");
+            };
+        }
+        else if (metric.equals("agenda")) {
+            return event -> {
+                model.setMetric("agenda");
+            };
+        }
+        else if (metric.equals("month")) {
+            return event -> {
+                model.setMetric("month");
+            };
+        }
+        else {
+            return event -> {
+                model.setMetric("week");
+            };
+        }
+    }
+
+    public static ChangeListener returnNewView(String metric, LocalDate highlightedDate) {
+        if (metric.equals("day")) {
+            bottomPanel.removeAll();
+            bottomPanel.add(new DayView(currentDate));
+            bottomPanel.revalidate();
+        }
+        else if (metric.equals("agenda")) {
+            //return new AgendaView(highlightedDate);
+        }
+
+    }
+}
 
 
 }
